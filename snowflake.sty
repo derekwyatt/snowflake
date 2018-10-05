@@ -1,0 +1,321 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{snowflake}[2018/10/02 Snowflake Package]
+\RequirePackage{etoolbox}
+\RequirePackage{trace}
+
+\newbool{snflkcategory}
+\newcommand{\category}[1]{\def\snflk@category{#1} \booltrue{snflkcategory}}
+\newcommand{\getcategory}{
+  \ifbool{snflkcategory}{
+    \item \textbf{Category}: \snflk@category
+  } {
+  }
+}
+
+\newbool{snflkkind}
+\newcommand{\kind}[1]{\def\snflk@kind{#1} \booltrue{snflkkind}}
+\newcommand{\getkind}{
+  \ifbool{snflkkind} {
+    \item \textbf{This is the kind of story I want to write}: \snflk@kind
+  } {
+  }
+}
+
+\newbool{snflkaudience}
+\newcommand{\audience}[1]{\def\snflk@audience{#1} \booltrue{snflkaudience}}
+\newcommand{\getaudience}{
+  \ifbool{snflkaudience} {
+    \item \textbf{My target audience is}: \snflk@audience
+  } {
+  }
+}
+
+\newbool{snflkonesent}
+\newcommand{\onesent}[1]{\def\snflk@onesent{#1} \booltrue{snflkonesent}}
+\newcommand{\getonesent}{
+  \ifbool{snflkonesent} {
+    \snflk@onesent
+  } {
+  }
+}
+
+\newbool{snflkonepara}
+\newcommand{\onepara}[1]{\def\snflk@onepara{#1} \booltrue{snflkonepara}}
+\newcommand{\getonepara}{\ifbool{snflkonepara}{\snflk@onepara}{}}
+
+\newbool{snflksynopsis}
+\newcommand{\synopsis}[1]{\def\snflk@synopsis{#1} \booltrue{snflksynopsis}}
+\newcommand{\getsynopsis}{\ifbool{snflksynopsis}{\snflk@synopsis}{}}
+
+\newbool{snflkbigsynopsis}
+\newcommand{\bigsynopsis}[1]{\def\snflk@bigsynopsis{#1} \booltrue{snflkbigsynopsis}}
+\newcommand{\getbigsynopsis}{\ifbool{snflkbigsynopsis}{\snflk@bigsynopsis}{}}
+
+\newcommand{\characters}{}
+\newcommand{\character}[1]{%
+  %    #1 - Character ID
+  %   ##1 - Property Name
+  % ####1 - Property Value
+  % ####1 - Prefix Text
+  \def\characterproperty##1{
+    \newbool{snflkchar#1##1}
+    \expandafter\def\csname ##1\endcsname####1{
+      \global\expandafter\def\csname snflkchar#1##1\endcsname{####1}
+      \global\booltrue{snflkchar#1##1}
+    }
+    \expandafter\def\csname get##1#1\endcsname{
+      \ifbool{snflkchar#1##1}{\csname snflkchar#1##1\endcsname}{}
+    }
+    \expandafter\def\csname getpre##1#1\endcsname####1{
+      \ifbool{snflkchar#1##1}{####1 \csname snflkchar#1##1\endcsname}{}
+    }
+  }
+
+  \characterproperty{age}
+  \characterproperty{books}
+  \characterproperty{changes}
+  \characterproperty{conflict}
+  \characterproperty{dress}
+  \characterproperty{education}
+  \characterproperty{epiphany}
+  \characterproperty{eyes}
+  \characterproperty{family}
+  \characterproperty{fears}
+  \characterproperty{gender}
+  \characterproperty{goal}
+  \characterproperty{hair}
+  \characterproperty{height}
+  \characterproperty{humour}
+  \characterproperty{hobbies}
+  \characterproperty{hopes}
+  \characterproperty{intelligence}
+  \characterproperty{memories}
+  \characterproperty{motivation}
+  \characterproperty{movies}
+  \characterproperty{name}
+  \characterproperty{outwardappearance}
+  \characterproperty{parasummary}
+  \characterproperty{personality}
+  \characterproperty{physdesc}
+  \characterproperty{race}
+  \characterproperty{role}
+  \characterproperty{sentsummary}
+  \characterproperty{strengths}
+  \characterproperty{charsynopsis}
+  \characterproperty{values}
+  \characterproperty{weaknesses}
+  \characterproperty{weight}
+  \characterproperty{occupation}
+
+  \listcsgadd{characters}{#1}
+}
+
+\newcommand{\scenes}{}
+\newcommand{\scene}[1]{%
+  %    #1 - Scene ID
+  %   ##1 - Property Name
+  % ####1 - Property Value
+  \def\sceneproperty##1{
+    \newbool{snflkscn#1##1}
+    \expandafter\def\csname ##1\endcsname####1{
+      \global\expandafter\def\csname snflkscn#1##1\endcsname{####1}
+      \global\booltrue{snflkscn#1##1}
+    }
+    \expandafter\def\csname get##1#1\endcsname{
+      \ifbool{snflkscn#1##1}{\csname snflkscn#1##1\endcsname}{}
+    }
+    \expandafter\def\csname getpre##1#1\endcsname####1{
+      \ifbool{snflkscn#1##1}{####1 \csname snflkscn#1##1\endcsname}{}
+    }
+  }
+
+  \sceneproperty{scnchars}
+  \sceneproperty{scnconflict}
+  \sceneproperty{scndecision}
+  \sceneproperty{scndesc}
+  \sceneproperty{scndilemma}
+  \sceneproperty{scnduration}
+  \sceneproperty{scngoal}
+  \sceneproperty{scnpov}
+  \sceneproperty{scnreaction}
+  \sceneproperty{scnsetback}
+  \sceneproperty{scnsummary}
+  \sceneproperty{scntitle}
+  \sceneproperty{scnwordcnt}
+
+  \listcsgadd{scenes}{#1}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Step commands
+\newcommand{\stepZero}{
+  \section{Step 0: \emph{The Absolute Basics}}
+  \begin{itemize}
+    \getcategory
+    \getkind
+    \getaudience
+  \end{itemize}
+}
+
+\newcommand{\stepOne}{
+  \section{Step 1: \emph{The Elevator Pitch}}
+  \getonesent
+}
+
+\newcommand{\stepTwo}{
+  \section{Step 2: \emph{The Summary Paragraph}}
+  \getonepara
+}
+
+\newcommand{\stepThree}{
+  \section{Step 3: \emph{Character Summary Sheets}}
+
+  \renewcommand*{\do}[1]{
+    %   ##1 - character id
+    % ####1 - property name
+    \newcommand{\deref}[1]{\csname get####1##1\endcsname}
+
+    %   ##1 - character id
+    % ####1 - property name
+    % ####2 - pre text
+    \newcommand{\derefitem}[2]{\csname getpre####1##1\endcsname{\item \textbf{####2}:}}
+
+    \subsection{\deref{name}}
+    \begin{itemize}
+      \derefitem{role}{Role}
+      \derefitem{values}{Values}
+      \derefitem{goal}{Story goal}
+      \derefitem{epiphany}{Epiphany}
+      \derefitem{parasummary}{Summary paragraph}
+      \derefitem{sentsummary}{One sentence summary}
+    \end{itemize}
+  }
+  \dolistloop{\characters}
+}
+
+\newcommand{\stepFour}{
+  \section{Step 4: \emph{One Page Synopsis}}
+  \getsynopsis
+}
+
+\newcommand{\stepFive}{
+  \section{Step 5: \emph{Character Synopses}}
+  \renewcommand*{\do}[1]{
+    %   ##1 - character id
+    % ####1 - property name
+    \renewcommand{\deref}[1]{\csname get####1##1\endcsname}
+
+    \subsection{\deref{name}}
+    \deref{charsynopsis}
+  }
+  \dolistloop{\characters}
+}
+
+\newcommand{\stepSix}{
+  \section{Step 6: \emph{Four Page Synopsis}}
+  \getbigsynopsis
+}
+
+\newcommand{\stepSeven}{
+  \section{Step 7: \emph{Character Bibles}}
+
+  \renewcommand*{\do}[1]{
+    %   ##1 - character id
+    % ####1 - property name
+    \renewcommand{\deref}[1]{\csname get####1##1\endcsname}
+
+    %   ##1 - character id
+    % ####1 - property name
+    % ####2 - pre text
+    \renewcommand{\derefitem}[2]{\csname getpre####1##1\endcsname{\item \textbf{####2}:}}
+
+    \subsection{\deref{name}}
+    \begin{itemize}
+      \derefitem{race}{Race}
+      \derefitem{gender}{Gender}
+      \derefitem{age}{Age}
+      \derefitem{height}{Height}
+      \derefitem{weight}{Weight}
+      \derefitem{hair}{Hair colour}
+      \derefitem{eyes}{Eye colour}
+      \derefitem{physdesc}{Physical description}
+      \derefitem{dress}{Style of dress}
+
+      \derefitem{humour}{Sense of humour}
+      \derefitem{personality}{Major personality traits}
+      \derefitem{occupation}{Occupation}
+
+      \derefitem{motivation}{Motivation}
+      \derefitem{changes}{How the character changes}
+
+      \derefitem{intelligence}{Intelligence level}
+      \derefitem{education}{Education}
+      \derefitem{strengths}{Strengths}
+      \derefitem{weaknesses}{Weaknesses}
+      \derefitem{outwardappearance}{Outward appearance}
+
+      \derefitem{fears}{Deepest fears}
+      \derefitem{hopes}{Greatest hopes}
+
+      \derefitem{family}{Family}
+      \derefitem{memories}{Memories}
+      \derefitem{hobbies}{Hobbies}
+      \derefitem{books}{Favourite books}
+      \derefitem{movies}{Favourite movies}
+    \end{itemize}
+  }
+  \dolistloop{\characters}
+}
+
+\newcommand{\stepEight}{
+  \section{Step 8: \emph{Scene List}}
+
+  \renewcommand*{\do}[1]{
+    %   ##1 - scene id
+    % ####1 - property name
+    \renewcommand{\deref}[1]{\csname get####1##1\endcsname}
+
+    \subsection{\deref{scntitle}}
+    \deref{scndesc}
+  }
+  \dolistloop{\scenes}
+}
+
+\newcommand{\stepNine}{
+  \section{Step 9: \emph{Scene Plans}}
+
+  \renewcommand*{\do}[1]{
+    %   ##1 - scene id
+    % ####1 - property name
+    \renewcommand{\deref}[1]{\csname get####1##1\endcsname}
+
+    %   ##1 - scene id
+    % ####1 - property name
+    % ####2 - pre text
+    \renewcommand{\derefitem}[2]{\csname getpre####1##1\endcsname{\item \textbf{####2}:}}
+
+    \subsection{\deref{scntitle}}
+    \begin{itemize}
+      \derefitem{scndesc}{Description}
+      \derefitem{scnpov}{Point of View}
+      \derefitem{scngoal}{Goal}
+      \derefitem{scnconflict}{Conflict}
+      \derefitem{scnsetback}{Setback}
+      \derefitem{scnreaction}{Reaction}
+      \derefitem{scndilemma}{Dilemma}
+      \derefitem{scndecision}{Decision}
+      \derefitem{scnduration}{Duration (in time)}
+      \derefitem{scnwordcnt}{Word count}
+      \derefitem{scnchars}{Characters}
+      \derefitem{scnsummary}{Summary}
+    \end{itemize}
+  }
+  \dolistloop{\scenes}
+}
+
+\newcommand{\stepTen}{
+  \section{Step 10: \emph{The Novel}}
+  Ain't it grand?
+}
+
+\endinput
