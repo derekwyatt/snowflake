@@ -1,55 +1,28 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{snowflake}[2018/10/02 Snowflake Package]
 \RequirePackage{etoolbox}
-\RequirePackage{trace}
 
-\newbool{snflkcategory}
-\newcommand{\category}[1]{\def\snflk@category{#1} \booltrue{snflkcategory}}
-\newcommand{\getcategory}{
-  \ifbool{snflkcategory}{
-    \item \textbf{Category}: \snflk@category
-  } {
+\def\snowflakeproperty#1{
+  \newbool{snowflake#1}
+  \expandafter\def\csname #1\endcsname##1{
+    \global\expandafter\def\csname snowflake#1val\endcsname{##1}
+    \global\booltrue{snowflake#1}
+  }
+  \expandafter\def\csname get#1\endcsname{
+    \ifbool{snowflake#1}{\csname snowflake#1val\endcsname}{}
+  }
+  \expandafter\def\csname get#1item\endcsname##1{
+    \ifbool{snowflake#1}{\item \textbf{##1}: \csname snowflake#1val\endcsname}{}
   }
 }
 
-\newbool{snflkkind}
-\newcommand{\kind}[1]{\def\snflk@kind{#1} \booltrue{snflkkind}}
-\newcommand{\getkind}{
-  \ifbool{snflkkind} {
-    \item \textbf{This is the kind of story I want to write}: \snflk@kind
-  } {
-  }
-}
-
-\newbool{snflkaudience}
-\newcommand{\audience}[1]{\def\snflk@audience{#1} \booltrue{snflkaudience}}
-\newcommand{\getaudience}{
-  \ifbool{snflkaudience} {
-    \item \textbf{My target audience is}: \snflk@audience
-  } {
-  }
-}
-
-\newbool{snflkonesent}
-\newcommand{\onesent}[1]{\def\snflk@onesent{#1} \booltrue{snflkonesent}}
-\newcommand{\getonesent}{
-  \ifbool{snflkonesent} {
-    \snflk@onesent
-  } {
-  }
-}
-
-\newbool{snflkonepara}
-\newcommand{\onepara}[1]{\def\snflk@onepara{#1} \booltrue{snflkonepara}}
-\newcommand{\getonepara}{\ifbool{snflkonepara}{\snflk@onepara}{}}
-
-\newbool{snflksynopsis}
-\newcommand{\synopsis}[1]{\def\snflk@synopsis{#1} \booltrue{snflksynopsis}}
-\newcommand{\getsynopsis}{\ifbool{snflksynopsis}{\snflk@synopsis}{}}
-
-\newbool{snflkbigsynopsis}
-\newcommand{\bigsynopsis}[1]{\def\snflk@bigsynopsis{#1} \booltrue{snflkbigsynopsis}}
-\newcommand{\getbigsynopsis}{\ifbool{snflkbigsynopsis}{\snflk@bigsynopsis}{}}
+\snowflakeproperty{category}
+\snowflakeproperty{kind}
+\snowflakeproperty{audience}
+\snowflakeproperty{onesent}
+\snowflakeproperty{onepara}
+\snowflakeproperty{synopsis}
+\snowflakeproperty{bigsynopsis}
 
 \newcommand{\characters}{}
 \newcommand{\character}[1]{%
@@ -151,9 +124,9 @@
 \newcommand{\stepZero}{
   \section{Step 0: \emph{The Absolute Basics}}
   \begin{itemize}
-    \getcategory
-    \getkind
-    \getaudience
+    \getcategoryitem{Category}
+    \getkinditem{The kind of story I want to write}
+    \getaudienceitem{Target audience}
   \end{itemize}
 }
 
